@@ -17,10 +17,10 @@ struct HomeView: View {
             self.viewModel.logout()
             dismiss()
         }) {
-            Text("Log In")
+            Text("Sign Out")
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.blue)
+                .background(Color.red)
                 .foregroundColor(.white)
                 .font(.headline)
                 .cornerRadius(12)

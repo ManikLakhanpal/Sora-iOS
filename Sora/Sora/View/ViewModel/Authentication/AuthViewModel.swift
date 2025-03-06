@@ -71,7 +71,20 @@ class AuthViewModel: ObservableObject {
             switch result {
                 
             case .success(let data):
-                print(data!)
+                let defaults = UserDefaults.standard
+                let dictionary = defaults.dictionaryRepresentation()
+                
+                defaults.removeObject(forKey: "jwt")
+                defaults.removeObject(forKey: "userid")
+                
+                dictionary.keys.forEach { key in
+                    defaults.removeObject(forKey: key)
+                }
+                
+                DispatchQueue.main.async {
+                    self.isAuthenticated = false
+                    self.currentUser = nil
+                }
                 
             case .failure(let error):
                 print(error.localizedDescription)
@@ -79,19 +92,6 @@ class AuthViewModel: ObservableObject {
             
         }
         
-        let defaults = UserDefaults.standard
-        let dictionary = defaults.dictionaryRepresentation()
-        
-        defaults.removeObject(forKey: "jwt")
-        defaults.removeObject(forKey: "userid")
-        
-        dictionary.keys.forEach { key in
-            defaults.removeObject(forKey: key)
-        }
-        
-        DispatchQueue.main.async {
-            self.isAuthenticated = false
-        }
     }
     
     

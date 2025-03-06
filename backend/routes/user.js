@@ -20,7 +20,7 @@ userRoutes.post('/signup', async (req, res) => {
     }
 })
 
-
+// * Login route which return JWT Token
 userRoutes.post('/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
@@ -34,12 +34,8 @@ userRoutes.post('/login', async (req, res) => {
     }
 })
 
-
-/* 
-TODO: Delete karna hai yahan JWT token db sai, 
-TODO: middleware ke through sabh check karke
-*/
-userRoutes.post('/logout', auth, async (req, res) => {
+// * LogOut Route
+userRoutes.patch('/logout', auth, async (req, res) => {
     try {
         const user = await User.findOneAndUpdate(
             { email: req.user.email },
@@ -59,5 +55,16 @@ userRoutes.post('/logout', auth, async (req, res) => {
     }
 });
 
+// * Get user via id
+userRoutes.get('/:id', async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id })
+        console.log(user);
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(error);
+    }
+})
 
 export default userRoutes;

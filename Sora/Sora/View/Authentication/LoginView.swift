@@ -12,7 +12,46 @@ struct LoginView: View {
     @State var password: String = ""
     
     var body: some View {
-        Text("LoginView")
+        VStack(spacing: 20) {
+            Spacer()
+            
+            // Title
+            Text("Login to Your Account")
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .multilineTextAlignment(.center)
+                .padding(.top, 40)
+
+            // Input Fields
+            VStack(spacing: 16) {
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                SecureField("Password", text: $password)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+            }
+            .padding(.top, 10)
+
+            // Register Button
+            Button(action: {
+                
+            }) {
+                Text("Log In")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .font(.headline)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+            }
+            .padding(.bottom, 40)
+
+            Spacer()
+        }
+        .background(Color(.systemBackground))
+        .edgesIgnoringSafeArea(.all)
     }
 }
 

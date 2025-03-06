@@ -11,10 +11,17 @@ struct ContentView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
-        WelcomeView()
+        if viewModel.isAuthenticated {
+            if let user = viewModel.currentUser {
+                HomeView()
+            }
+        } else {
+            WelcomeView()
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(AuthViewModel.shared)
 }

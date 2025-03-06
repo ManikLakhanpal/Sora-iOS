@@ -22,7 +22,7 @@ enum AuthenticationError: Error {
 public class AuthServices {
     
     static func login(email: String, password: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
-        let urlString = URL(string: "\(backendURL)/users/login")!
+        let urlString = URL(string: "\(backendURL)/user/login")!
         
         makeRequest(urlString: urlString, reqBody: ["email": email, "password": password]) { result in
             
@@ -38,7 +38,7 @@ public class AuthServices {
     }
     
     static func register(email: String, username: String, password: String, name: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
-        let urlString = URL(string: "\(backendURL)/users")!
+        let urlString = URL(string: "\(backendURL)/user/signup")!
         
         makeRequest(urlString: urlString, reqBody: ["email": email, "username": username, "password": password, "name": name]) { result in
             switch result {
@@ -164,7 +164,7 @@ public class AuthServices {
             }
         }
         
-        let token = UserDefaults.standard.string(forKey: "jsonwebtoken")!
+        let token = UserDefaults.standard.string(forKey: "jwt")!
         
         request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         

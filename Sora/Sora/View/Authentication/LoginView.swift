@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
+    @Environment(\.dismiss) var dismiss
+    
     @State var email: String = ""
     @State var password: String = ""
     
@@ -35,7 +38,8 @@ struct LoginView: View {
 
             // Register Button
             Button(action: {
-                
+                self.viewModel.login(email: email, password: password)
+                dismiss()
             }) {
                 Text("Log In")
                     .frame(maxWidth: .infinity)

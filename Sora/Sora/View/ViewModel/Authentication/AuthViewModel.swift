@@ -22,7 +22,7 @@ class AuthViewModel: ObservableObject {
             
             if let userId = UserDefaults.standard.string(forKey: "userid") {
                 fetchUser(userId: userId )
-                print("Fetched User : \(currentUser!)")
+                print("Fetched User : \(currentUser)")
             }
         }
     }
@@ -49,10 +49,14 @@ class AuthViewModel: ObservableObject {
             switch result {
             case .success(let data):
                 guard let response = try? JSONDecoder().decode(ApiResponse.self, from: data!) else { return }
-                UserDefaults.standard.set(response.token, forKey: "jwt")
-                UserDefaults.standard.set(response.user.id, forKey: "userid")
-                self.currentUser = response.user
-                print("User logged in \(response.user)")
+                print(response)
+                DispatchQueue.main.async {
+                    UserDefaults.standard.set(response.token, forKey: "jwt")
+                    UserDefaults.standard.set(response.user.id, forKey: "userid")
+                    self.isAuthenticated = true
+                    self.currentUser = response.user
+                    print("User logged in \(response.user)")
+                }
                 
             case .failure(let error):
                 print(error.localizedDescription)
@@ -64,21 +68,6 @@ class AuthViewModel: ObservableObject {
     
     func logout() {
         AuthServices.makePathRequestWithAuth(urlString: URL(string:("\(backendURL)/user/logout"))!, reqBody: nil) { result in
-            
-            let defaults = UserDefaults.standard
-            let dictionary = defaults.dictionaryRepresentation()
-            
-            defaults.removeObject(forKey: "jwt")
-            defaults.removeObject(forKey: "userid")
-            
-            dictionary.keys.forEach { key in
-                defaults.removeObject(forKey: key)
-            }
-            
-            DispatchQueue.main.async {
-                self.isAuthenticated = false
-            }
-        
             switch result {
                 
             case .success(let data):
@@ -88,6 +77,20 @@ class AuthViewModel: ObservableObject {
                 print(error.localizedDescription)
             }
             
+        }
+        
+        let defaults = UserDefaults.standard
+        let dictionary = defaults.dictionaryRepresentation()
+        
+        defaults.removeObject(forKey: "jwt")
+        defaults.removeObject(forKey: "userid")
+        
+        dictionary.keys.forEach { key in
+            defaults.removeObject(forKey: key)
+        }
+        
+        DispatchQueue.main.async {
+            self.isAuthenticated = false
         }
     }
     
@@ -99,7 +102,7 @@ class AuthViewModel: ObservableObject {
             case .success(let data):
                 guard let user = try? JSONDecoder().decode(User.self, from: data!) else { return }
                 DispatchQueue.main.async {
-                    UserDefaults.standard.set(user.id, forKey: "userId")
+                    UserDefaults.standard.set(user.id, forKey: "userid")
                     self.isAuthenticated = true
                     self.currentUser = user
                 }

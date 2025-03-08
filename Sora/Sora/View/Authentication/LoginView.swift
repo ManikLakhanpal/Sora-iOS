@@ -39,11 +39,17 @@ struct LoginView: View {
             VStack(spacing: 16) {
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .email)
+                    .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
                     .submitLabel(.next)
                     .onSubmit {
                         focusedField = .password
                     }
+                    .onChange(of: email) {
+                        email = String(email.lowercased().trimmingCharacters(in: .whitespaces))
+                    }
+                    .overlay(focusedField == .email ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
                 
                 SecureField("Password", text: $password)
@@ -53,6 +59,7 @@ struct LoginView: View {
                     .onSubmit {
                         processEmailAndPassword()
                     }
+                    .overlay(focusedField == .password ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
             }
             .padding(.top, 10)
@@ -89,6 +96,11 @@ struct LoginView: View {
         
         self.viewModel.loginErrorMessage = nil
         self.viewModel.login(email: email, password: password)
+    }
+    
+    private var borderSelectionOverlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(Color.blue, lineWidth: 2)
     }
 }
 

@@ -25,8 +25,12 @@ userRoutes.post('/signup', async (req, res) => {
             return res.status(409).json({ error: "Email or username already exists" });
         }
 
-        if (error.message.includes('minimum allowed length ')) {
+        if (error.message.includes('minimum allowed length')) {
             return res.status(409).json({ error: "Minimum length of your password should be 7" });
+        }
+
+        if (error.message.includes('maximum allowed length')) {
+            return res.status(409).json({ error: "Username's length should be less than 17" });
         }
 
         res.status(400).json({ error: error.message });

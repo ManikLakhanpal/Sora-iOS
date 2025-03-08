@@ -50,29 +50,37 @@ struct RegisterView: View {
                     .onSubmit {
                         focusedField = .username
                     }
+                    .focused($focusedField, equals: .name)
+                    .overlay(focusedField == .name ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
                 
                 TextField("Username", text: $username)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .focused($focusedField, equals: .username)
-                .textInputAutocapitalization(.never)
-                .submitLabel(.next)
-                .onSubmit {
-                    focusedField = .email
-                }
-                .onChange(of: username) {
-                    username = username.lowercased()
-                }
-                .padding(.horizontal)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .username)
+                    .textInputAutocapitalization(.never)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .email
+                    }
+                    .onChange(of: username) {
+                        username = String(username.lowercased().prefix(16))
+                    }
+                    .overlay(focusedField == .username ? borderSelectionOverlay : nil)
+                    .padding(.horizontal)
                 
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .focused($focusedField, equals: .email)
+                    .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
                     .submitLabel(.next) // Shows "Done" on keyboard
                     .onSubmit {
                         focusedField = .password
                     }
+                    .onChange(of: email) {
+                        email = String(email.lowercased().trimmingCharacters(in: .whitespaces))
+                    }
+                    .overlay(focusedField == .email ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
                 
                 SecureField("Password", text: $password)
@@ -82,6 +90,7 @@ struct RegisterView: View {
                     .onSubmit {
                         processEmailAndPassword()
                     }
+                    .overlay(focusedField == .password ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
             }
             .padding(.top, 10)
@@ -126,6 +135,11 @@ struct RegisterView: View {
         
         self.viewModel.registerErrorMessage = nil
         self.viewModel.register(name: name, username: username, email: email, password: password)
+    }
+    
+    private var borderSelectionOverlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(Color.blue, lineWidth: 2)
     }
 }
 

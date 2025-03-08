@@ -29,10 +29,12 @@ public class AuthServices {
             switch result {
             case .success(let data):
                 completion(.success(data))
+                
             case .failure(let networkError):
                 switch networkError {
                 case .serverError(let message):
                     completion(.failure(.custom(errorMessage: message)))
+                    
                 default:
                     completion(.failure(.invalidCredentials))
                 }
@@ -48,8 +50,14 @@ public class AuthServices {
             case .success(let data):
                 completion(.success(data))
                 
-            case .failure(let error):
-                completion(.failure(.invalidCredentials))
+            case .failure(let networkError):
+                switch networkError {
+                case .serverError(let message):
+                    completion(.failure(.custom(errorMessage: message)))
+                    
+                default:
+                    completion(.failure(.invalidCredentials))
+                }
             }
         }
     }

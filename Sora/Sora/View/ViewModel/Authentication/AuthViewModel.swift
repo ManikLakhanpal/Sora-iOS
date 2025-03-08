@@ -10,7 +10,9 @@ import SwiftUI
 class AuthViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var currentUser: User?
+    
     @Published var loginErrorMessage: String?
+    @Published var registerErrorMessage: String?
     
     static let shared = AuthViewModel()
     
@@ -33,16 +35,23 @@ class AuthViewModel: ObservableObject {
             switch result {
             case .success(let data):
                 guard let response = try? JSONDecoder().decode(ApiResponse.self, from: data!) else { return }
+                print(response)
                 DispatchQueue.main.async {
                     UserDefaults.standard.set(response.token, forKey: "jwt")
                     UserDefaults.standard.set(response.user.id, forKey: "userid")
                     self.isAuthenticated = true
                     self.currentUser = response.user
-                    print("User created and logged \(response.user)")
+                    print("User logged in \(response.user)")
                 }
-                
             case .failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    switch error {
+                    case .custom(let errorMessage):
+                        self.registerErrorMessage = errorMessage
+                    default:
+                        self.registerErrorMessage = "Invalid email or password"
+                    }
+                }
             }
         }
     }

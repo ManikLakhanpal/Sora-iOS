@@ -16,6 +16,15 @@ struct RegisterView: View {
     @State private var username: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
+    
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case name
+        case username
+        case email
+        case password
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -26,27 +35,57 @@ struct RegisterView: View {
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(.top, 40)
-
+            
+            if let error = self.viewModel.registerErrorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+            }
+            
             // Input Fields
             VStack(spacing: 16) {
                 TextField("Full Name", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.default)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .username
+                    }
                     .padding(.horizontal)
-
+                
                 TextField("Username", text: $username)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .focused($focusedField, equals: .username)
+                .textInputAutocapitalization(.never)
+                .submitLabel(.next)
+                .onSubmit {
+                    focusedField = .email
+                }
+                .onChange(of: username) {
+                    username = username.lowercased()
+                }
+                .padding(.horizontal)
+                
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .email)
+                    .keyboardType(.emailAddress)
+                    .submitLabel(.next) // Shows "Done" on keyboard
+                    .onSubmit {
+                        focusedField = .password
+                    }
                     .padding(.horizontal)
-
+                
                 SecureField("Password", text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .password)
+                    .submitLabel(.done) // Shows "Done" on keyboard
+                    .onSubmit {
+                        processEmailAndPassword()
+                    }
                     .padding(.horizontal)
             }
             .padding(.top, 10)
-
+            
             // Register Button
             Button(action: {
                 self.viewModel.register(name: name, username: username, email: email, password: password)
@@ -61,14 +100,36 @@ struct RegisterView: View {
                     .padding(.horizontal)
             }
             .padding(.bottom, 40)
-
+            
             Spacer()
         }
         .background(Color(.systemBackground))
         .edgesIgnoringSafeArea(.all)
     }
+    
+    func processEmailAndPassword() {
+        if email.isEmpty {
+            return self.viewModel.registerErrorMessage = "Email is required"
+        }
+        
+        if name.isEmpty {
+            return self.viewModel.registerErrorMessage = "Name is required"
+        }
+        
+        if username.isEmpty {
+            return self.viewModel.registerErrorMessage = "Username is required"
+        }
+        
+        if password.count < 7 {
+            return self.viewModel.registerErrorMessage = "Password length isn't correct"
+        }
+        
+        self.viewModel.registerErrorMessage = nil
+        self.viewModel.register(name: name, username: username, email: email, password: password)
+    }
 }
 
 #Preview {
     RegisterView()
+        .environmentObject(AuthViewModel.shared)
 }

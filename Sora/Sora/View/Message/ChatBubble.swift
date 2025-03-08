@@ -15,11 +15,18 @@ struct ChatBubble: View {
         HStack {
             if isUser { Spacer() }
             
-            Text(text)
+            Text(.init(text))
                 .padding()
                 .background(isUser ? .blue : .gray.opacity(0.2))
                 .foregroundColor(isUser ? .white : .primary)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
+                .contextMenu {
+                    Button() {
+                        UIPasteboard.general.string = text
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
+                }
             
             // For horizontal alignment
             if !isUser { Spacer() }

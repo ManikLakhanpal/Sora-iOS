@@ -7,16 +7,20 @@
 
 import Foundation
 
-struct Chat: Decodable {
-    var history: [ChatHistory?]
-    var chat: String
+struct Chat: Codable {
+    var history: [ChatHistory]?
+    var chat: String?
 }
 
-struct ChatHistory: Decodable {
+struct ChatHistory: Codable {
     var role: String
     var parts: [ChatMessage]
 }
 
-struct ChatMessage: Decodable {
+struct ChatMessage: Codable {
+    var text: String
+}
+
+struct chatAPIResponse: Decodable {
     var text: String
 }

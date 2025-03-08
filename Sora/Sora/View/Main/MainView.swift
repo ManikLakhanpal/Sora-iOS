@@ -8,101 +8,118 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var messages: [Message] = [
-        Message(text: "Hello! How can I assist you today?", isFromUser: false),
-        Message(text: "Hi! I need help with SwiftUI.", isFromUser: true)
-    ]
+    @StateObject private var viewModel = MessageViewModel.shared
     @State private var newMessage: String = ""
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Chat Messages
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(messages) { message in
-                            ChatBubble(message: message)
+        NavigationView {
+            VStack(spacing: 0) {
+                // Chat Messages
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(viewModel.history, id: \.self) { chatHistory in
+                                ChatBubble(message: chatHistory)
+                                    .id(chatHistory.id)
+                                    .transition(.opacity.combined(with: .scale))
+                            }
+                        }
+                        .padding(.vertical, 16)
+                    }
+                    .onChange(of: viewModel.history.count) { _ in
+                        withAnimation {
+                            proxy.scrollTo(viewModel.history.last?.id, anchor: .bottom)
                         }
                     }
-                    .padding(.vertical)
                 }
-                .onChange(of: messages.count) { _ in
-                    // Scroll to the bottom when a new message is added
-                    withAnimation {
-                        proxy.scrollTo(messages.last?.id, anchor: .bottom)
-                    }
-                }
-            }
-            
-            // Message Input Box
-            HStack {
-                TextField("Type a message...", text: $newMessage)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.leading)
+                .background(Color(.systemBackground))
                 
-                Button(action: sendMessage) {
-                    Image(systemName: "paperplane.fill")
-                        .padding(10)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
+                // Message Input Box
+                HStack(alignment: .bottom, spacing: 12) {
+                    TextField("Type a message...", text: $newMessage, axis: .vertical)
+                        .textFieldStyle(.roundedBorder)
+                        .padding(.leading, 16)
+                        .padding(.vertical, 8)
+                        .lineLimit(4)
+                        .disabled(viewModel.isLoading)
+                    
+                    Button(action: sendMessage) {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .padding(12)
+                                .background(Color.blue.opacity(0.7))
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                                .font(.system(size: 20))
+                                .padding(12)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                                .shadow(color: Color.blue.opacity(0.3), radius: 5, x: 0, y: 2)
+                        }
+                    }
+                    .padding(.trailing, 16)
+                    .disabled(newMessage.isEmpty || viewModel.isLoading)
                 }
-                .padding(.trailing)
+                .background(Color(.systemBackground))
+                .overlay(Divider(), alignment: .top)
+                
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .padding()
+                        .transition(.move(edge: .bottom))
+                }
             }
-            .padding(.vertical, 8)
-            .background(Color(.systemBackground))
-            .overlay(Divider(), alignment: .top)
         }
-        .navigationTitle("AI Chat")
     }
     
-    // Send Message Function
     private func sendMessage() {
         guard !newMessage.isEmpty else { return }
         
-        // Add user message
-        messages.append(Message(text: newMessage, isFromUser: true))
-        
-        // Simulate AI response after a delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            messages.append(Message(text: "I'm thinking...", isFromUser: false))
-        }
-        
-        // Clear input
+        let userMessage = ChatHistory(role: "user", parts: [ChatMessage(text: newMessage)])
+        viewModel.history.append(userMessage)
+        viewModel.chat = newMessage
         newMessage = ""
+        
+        viewModel.sendMessage()
     }
 }
 
-// Chat Bubble View
 struct ChatBubble: View {
-    let message: Message
+    let message: ChatHistory
     
     var body: some View {
-        HStack {
-            if message.isFromUser {
+        HStack(alignment: .bottom, spacing: 8) {
+            if message.role == "user" {
                 Spacer()
+                
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.blue)
             }
             
-            Text(message.text)
+            Text(message.parts.first?.text ?? "")
                 .padding(12)
-                .background(message.isFromUser ? Color.blue : Color.gray.opacity(0.2))
-                .clipShape(RoundedRectangle(cornerRadius: 15))
-                .foregroundColor(message.isFromUser ? .white : .primary)
+                .background(message.role == "user" ? Color.blue : Color.gray.opacity(0.15))
+                .foregroundColor(message.role == "user" ? .white : .primary)
+                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
             
-            if !message.isFromUser {
+            if message.role != "user" {
+                Image(systemName: "sparkles")
+                    .resizable()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.purple)
+                
                 Spacer()
             }
         }
-        .padding(.horizontal)
-        .transition(.opacity)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 4)
     }
-}
-
-// Message Model
-struct Message: Identifiable {
-    let id = UUID()
-    let text: String
-    let isFromUser: Bool
 }
 
 #Preview {

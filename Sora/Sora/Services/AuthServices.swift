@@ -8,18 +8,6 @@
 import Foundation
 import SwiftUI
 
-enum NetworkError: Error {
-    case invalidURL
-    case noData
-    case decodingError
-    case serverError(message: String)
-}
-
-enum AuthenticationError: Error {
-    case invalidCredentials
-    case custom(errorMessage: String)
-}
-
 public class AuthServices {
     
     static func login(email: String, password: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {

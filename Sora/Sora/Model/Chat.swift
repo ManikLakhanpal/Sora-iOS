@@ -8,8 +8,8 @@
 import Foundation
 
 struct Chat: Codable {
-    var history: [ChatHistory]?
-    var chat: String?
+    var history: [ChatHistory]
+    var chat: String
 }
 
 struct ChatHistory: Codable {
@@ -21,6 +21,6 @@ struct ChatMessage: Codable {
     var text: String
 }
 
-struct chatAPIResponse: Decodable {
+struct ChatAPIResponse: Decodable {
     var text: String
 }

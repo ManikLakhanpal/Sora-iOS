@@ -7,54 +7,61 @@
 
 import Foundation
 
-public class MessageServices {
-    static func sendMessage(_ message: Chat, completion: @escaping (Result<chatAPIResponse, Error>) -> Void) {
-        let urlString = URL(string: "\(backendURL)/api/chat")!
+class MessageServices {
+    static func sendMessage(_ chat: Chat, completion: @escaping (Result<ChatAPIResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(backendURL)/api/chat") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
         
-        var request = URLRequest(url: urlString)
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Add JWT if available
+        if let token = UserDefaults.standard.string(forKey: "jwt") {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         
         do {
-            let encoder = JSONEncoder()
-            request.httpBody = try encoder.encode(message)
+            request.httpBody = try JSONEncoder().encode(chat)
         } catch {
             completion(.failure(error))
             return
         }
         
-        // Add headers
-        if let token = UserDefaults.standard.string(forKey: "jwt") {
-            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(NSError(domain: "", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(NSError(domain: "Invalid Response", code: 0)))
+                return
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let error = NSError(
+                    domain: "API Error",
+                    code: httpResponse.statusCode,
+                    userInfo: [NSLocalizedDescriptionKey: "HTTP Error: \(httpResponse.statusCode)"]
+                )
+                completion(.failure(error))
                 return
             }
             
             guard let data = data else {
-                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
+                completion(.failure(NSError(domain: "No Data", code: 0)))
                 return
             }
             
             do {
-                let decoder = JSONDecoder()
-                let response = try decoder.decode(chatAPIResponse.self, from: data)
+                let response = try JSONDecoder().decode(ChatAPIResponse.self, from: data)
                 completion(.success(response))
             } catch {
                 completion(.failure(error))
             }
-        }
-        
-        task.resume()
+        }.resume()
     }
 }

@@ -23,7 +23,6 @@ class AuthViewModel: ObservableObject {
         if token != nil {
             if let userId = UserDefaults.standard.string(forKey: "userid") {
                 fetchUser(userId: userId )
-                print("Fetched User : \(currentUser)")
             }
         }
     }
@@ -123,6 +122,7 @@ class AuthViewModel: ObservableObject {
                     UserDefaults.standard.set(user.id, forKey: "userid")
                     self.isAuthenticated = true
                     self.currentUser = user
+                    print("Fetched User : \(user)")
                 }
                 
             case .failure(let error):

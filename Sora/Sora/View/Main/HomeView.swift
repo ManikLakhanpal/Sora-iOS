@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var x: CGFloat = -UIScreen.main.bounds.width + 40
     
@@ -39,7 +40,7 @@ struct HomeView: View {
                 
                 SlideMenu()
                     .offset(x: x)
-                    .shadow(color: Color.black.opacity(x != 0 ? 0.1 : 0), radius: 5, x: 5, y: 0)
+                    .shadow(color: Color.gray.opacity(x != 0 ? (colorScheme == .light ? 0.1 : 0.8) : 0), radius: 5, x: 5, y: 0)
                     .animation(.easeInOut(duration: 0.4), value: x) // Smooth animation
             }
             .gesture(DragGesture().onChanged({ (value) in
@@ -73,4 +74,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environmentObject(AuthViewModel.shared)
 }

@@ -9,8 +9,6 @@
 
 import SwiftUI
 
-var menuButtons = ["Profile", "Lists", "Topics", "Bookmarks", "Moments"]
-
 struct SlideMenu: View {
     
     @State var show = true
@@ -25,7 +23,24 @@ struct SlideMenu: View {
         VStack {
             HStack(spacing: 0) {
                 VStack(alignment: .leading) {
+                    VStack(alignment: .leading) {
+                        Text("\(self.viewModel.currentUser?.name ?? "Nil")")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                        
+                        Text("@\(self.viewModel.currentUser?.username ?? "Nil")")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .fontWeight(.bold)
+                    }
+                    .padding(.vertical, 40)
+                    
+                    Divider()
+                    
                     Spacer()
+                    
+                    Divider()
+                    
                     Button(action: {
                         self.showLogoutAlert.toggle()
                     }) {
@@ -38,6 +53,7 @@ struct SlideMenu: View {
                             .cornerRadius(12)
                             .padding(.horizontal)
                     }
+                    .padding(.top)
                     .padding(.bottom, 40)
                 }
             }
@@ -58,11 +74,12 @@ struct SlideMenu: View {
                     viewModel.logout()
                 }
             }
-        
+            .ignoresSafeArea()
     }
 }
 
 
 #Preview {
     SlideMenu()
+        .environmentObject(AuthViewModel.shared)
 }

@@ -40,7 +40,7 @@ struct SlideMenu: View {
                     Spacer()
                     
                     Divider()
-                    
+                        
                     Button(action: {
                         self.showLogoutAlert.toggle()
                     }) {

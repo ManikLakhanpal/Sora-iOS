@@ -22,9 +22,13 @@ struct HomeView: View {
         NavigationView {
             ZStack(alignment: .leading) {
                 VStack {
-                    Text("Home")
+                    TopBar(x: $x)
+                    
+                    Spacer()
+                    
+                    MainView()
                         .onAppear {
-                            x = -width // Initialize correctly
+                            x = -width
                         }
                 }
                 .offset(x: x + width)

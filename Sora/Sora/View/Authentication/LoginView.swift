@@ -13,6 +13,7 @@ struct LoginView: View {
     
     @State var email: String = ""
     @State var password: String = ""
+    @State var error: String = ""
     
     var body: some View {
         VStack(spacing: 20) {
@@ -39,7 +40,6 @@ struct LoginView: View {
             // Register Button
             Button(action: {
                 self.viewModel.login(email: email, password: password)
-                dismiss()
             }) {
                 Text("Log In")
                     .frame(maxWidth: .infinity)

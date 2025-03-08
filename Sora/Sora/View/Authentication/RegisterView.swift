@@ -50,7 +50,6 @@ struct RegisterView: View {
             // Register Button
             Button(action: {
                 self.viewModel.register(name: name, username: username, email: email, password: password)
-                dismiss()
             }) {
                 Text("Register")
                     .frame(maxWidth: .infinity)

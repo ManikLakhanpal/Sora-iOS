@@ -32,6 +32,7 @@ public class AuthServices {
                 completion(.success(data))
                 
             case .failure(let error):
+                print("error \(error)")
                 completion(.failure(.invalidCredentials))
             }
         }
@@ -82,6 +83,8 @@ public class AuthServices {
             }
             
             completion(.success(data))
+            
+            print("testing \(data)")
             
             do {
                 if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any] {

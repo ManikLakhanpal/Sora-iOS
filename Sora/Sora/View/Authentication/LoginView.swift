@@ -13,6 +13,12 @@ struct LoginView: View {
     
     @State var email: String = ""
     @State var password: String = ""
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case email
+        case password
+    }
     
     var body: some View {
         VStack(spacing: 20) {
@@ -33,18 +39,27 @@ struct LoginView: View {
             VStack(spacing: 16) {
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.emailAddress)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .password
+                    }
                     .padding(.horizontal)
-
+                
                 SecureField("Password", text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .password)
+                    .submitLabel(.done) // Shows "Done" on keyboard
+                    .onSubmit {
+                        processEmailAndPassword()
+                    }
                     .padding(.horizontal)
             }
             .padding(.top, 10)
 
             // Register Button
             Button(action: {
-                self.viewModel.loginErrorMessage = nil
-                self.viewModel.login(email: email, password: password)
+                processEmailAndPassword()
             }) {
                 Text("Log In")
                     .frame(maxWidth: .infinity)
@@ -62,8 +77,22 @@ struct LoginView: View {
         .background(Color(.systemBackground))
         .edgesIgnoringSafeArea(.all)
     }
+    
+    func processEmailAndPassword() {
+        if email.isEmpty {
+            return self.viewModel.loginErrorMessage = "Email is required"
+        }
+        
+        if password.count < 7 {
+            return self.viewModel.loginErrorMessage = "Password length isn't correct"
+        }
+        
+        self.viewModel.loginErrorMessage = nil
+        self.viewModel.login(email: email, password: password)
+    }
 }
 
 #Preview {
     LoginView()
+        .environmentObject(AuthViewModel.shared)
 }

@@ -9,49 +9,48 @@ import Foundation
 
 class MessageViewModel: ObservableObject {
     @Published var history: [ChatHistory] = []
-    @Published var chat: String = ""
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var inputMessage: String = ""
+    @Published var isLoading: Bool? = nil
+    @Published var error: String?
     
     static let shared = MessageViewModel()
     
     func sendMessage() {
-        guard !chat.isEmpty else { return }
+        guard !inputMessage.isEmpty else { return }
         
         isLoading = true
-        errorMessage = nil
+        error = nil
         
-        // Add user message to history
+        // Add user message
         let userMessage = ChatHistory(
             role: "user",
-            parts: [ChatMessage(text: chat)]
+            parts: [ChatMessage(text: inputMessage)]
         )
         history.append(userMessage)
         
         // Create request body
         let request = Chat(
             history: history,
-            chat: chat
+            chat: inputMessage
         )
         
         MessageServices.sendMessage(request) { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
+                self?.inputMessage = ""
                 
                 switch result {
                 case .success(let response):
-                    // Add AI response
                     let aiMessage = ChatHistory(
                         role: "model",
                         parts: [ChatMessage(text: response.text)]
                     )
                     self?.history.append(aiMessage)
-                    self?.chat = ""
                     
                 case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
+                    self?.error = error.localizedDescription
                     // Remove failed user message
-                    if let last = self?.history.last, last.role == "user" {
+                    if self?.history.last?.role == "user" {
                         self?.history.removeLast()
                     }
                 }

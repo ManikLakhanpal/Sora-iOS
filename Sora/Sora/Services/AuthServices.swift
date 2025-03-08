@@ -12,6 +12,7 @@ enum NetworkError: Error {
     case invalidURL
     case noData
     case decodingError
+    case serverError(message: String)
 }
 
 enum AuthenticationError: Error {
@@ -25,15 +26,16 @@ public class AuthServices {
         let urlString = URL(string: "\(backendURL)/user/login")!
         
         makeRequest(urlString: urlString, reqBody: ["email": email, "password": password]) { result in
-            
             switch result {
-                
             case .success(let data):
                 completion(.success(data))
-                
-            case .failure(let error):
-                print("error \(error)")
-                completion(.failure(.invalidCredentials))
+            case .failure(let networkError):
+                switch networkError {
+                case .serverError(let message):
+                    completion(.failure(.custom(errorMessage: message)))
+                default:
+                    completion(.failure(.invalidCredentials))
+                }
             }
         }
     }
@@ -53,27 +55,47 @@ public class AuthServices {
     }
     
     static func makeRequest(urlString: URL, reqBody: [String: Any], completion: @escaping (_ result: Result<Data?, NetworkError>) -> Void)  {
-        
         let session = URLSession.shared
-        
         var request = URLRequest(url: urlString)
-        
         request.httpMethod = "POST"
         
         do {
-            
             request.httpBody = try JSONSerialization.data(withJSONObject: reqBody, options: .prettyPrinted)
-            
-        } catch let error {
-            print(error)
+        } catch {
+            completion(.failure(.invalidURL))
+            return
         }
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        let task = session.dataTask(with: request) { data, res, err in
-        
-            guard err == nil else {
+        let task = session.dataTask(with: request) { data, response, error in
+            if let _ = error {
+                completion(.failure(.invalidURL))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidURL))
+                return
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                guard let data = data else {
+                    completion(.failure(.noData))
+                    return
+                }
+                
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let errorMessage = json["error"] as? String {
+                        completion(.failure(.serverError(message: errorMessage)))
+                    } else {
+                        completion(.failure(.decodingError))
+                    }
+                } catch {
+                    completion(.failure(.decodingError))
+                }
                 return
             }
             
@@ -83,19 +105,6 @@ public class AuthServices {
             }
             
             completion(.success(data))
-            
-            print("testing \(data)")
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any] {
-                    
-                }
-
-            } catch {
-                completion(.failure(.decodingError))
-                print(error)
-            }
-            
         }
         
         task.resume()

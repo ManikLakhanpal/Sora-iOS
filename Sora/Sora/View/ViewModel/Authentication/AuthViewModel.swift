@@ -10,6 +10,7 @@ import SwiftUI
 class AuthViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var currentUser: User?
+    @Published var loginErrorMessage: String?
     
     static let shared = AuthViewModel()
     
@@ -18,8 +19,6 @@ class AuthViewModel: ObservableObject {
         let token = UserDefaults.standard.string(forKey: "jwt")
         
         if token != nil {
-            isAuthenticated = true
-            
             if let userId = UserDefaults.standard.string(forKey: "userid") {
                 fetchUser(userId: userId )
                 print("Fetched User : \(currentUser)")
@@ -33,7 +32,14 @@ class AuthViewModel: ObservableObject {
             
             switch result {
             case .success(let data):
-                guard let user = try? JSONDecoder().decode(User.self, from: data!) else { return }
+                guard let response = try? JSONDecoder().decode(ApiResponse.self, from: data!) else { return }
+                DispatchQueue.main.async {
+                    UserDefaults.standard.set(response.token, forKey: "jwt")
+                    UserDefaults.standard.set(response.user.id, forKey: "userid")
+                    self.isAuthenticated = true
+                    self.currentUser = response.user
+                    print("User created and logged \(response.user)")
+                }
                 
             case .failure(let error):
                 print(error.localizedDescription)
@@ -43,9 +49,7 @@ class AuthViewModel: ObservableObject {
     
     
     func login(email: String, password: String) {
-        
         AuthServices.login(email: email, password: password) { result in
-            
             switch result {
             case .success(let data):
                 guard let response = try? JSONDecoder().decode(ApiResponse.self, from: data!) else { return }
@@ -57,11 +61,16 @@ class AuthViewModel: ObservableObject {
                     self.currentUser = response.user
                     print("User logged in \(response.user)")
                 }
-                
             case .failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    switch error {
+                    case .custom(let errorMessage):
+                        self.loginErrorMessage = errorMessage
+                    default:
+                        self.loginErrorMessage = "Invalid email or password"
+                    }
+                }
             }
-            
         }
     }
     
@@ -70,7 +79,7 @@ class AuthViewModel: ObservableObject {
         AuthServices.makePathRequestWithAuth(urlString: URL(string:("\(backendURL)/user/logout"))!, reqBody: nil) { result in
             switch result {
                 
-            case .success(let data):
+            case .success:
                 let defaults = UserDefaults.standard
                 let dictionary = defaults.dictionaryRepresentation()
                 
@@ -108,6 +117,8 @@ class AuthViewModel: ObservableObject {
                 }
                 
             case .failure(let error):
+                self.isAuthenticated = false
+                self.currentUser = nil
                 print(error.localizedDescription)
             }
             

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let backendURL = "http://192.168.1.162:5000"
+let backendURL = "http://192.168.1.15:5000"
 
 @main
 struct SoraApp: App {

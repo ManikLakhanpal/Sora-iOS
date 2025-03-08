@@ -13,7 +13,6 @@ struct LoginView: View {
     
     @State var email: String = ""
     @State var password: String = ""
-    @State var error: String = ""
     
     var body: some View {
         VStack(spacing: 20) {
@@ -24,6 +23,11 @@ struct LoginView: View {
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(.top, 40)
+            
+            if let error = self.viewModel.loginErrorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+            }
 
             // Input Fields
             VStack(spacing: 16) {
@@ -39,6 +43,7 @@ struct LoginView: View {
 
             // Register Button
             Button(action: {
+                self.viewModel.loginErrorMessage = nil
                 self.viewModel.login(email: email, password: password)
             }) {
                 Text("Log In")

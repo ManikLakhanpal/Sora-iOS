@@ -11,10 +11,10 @@ struct HomeView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
     
-    @State private var x: CGFloat = -UIScreen.main.bounds.width + 50
+    @State private var x: CGFloat = -UIScreen.main.bounds.width + 40
     
     var width: CGFloat {
-        UIScreen.main.bounds.width - 50
+        UIScreen.main.bounds.width - 40
     }
     
     var body: some View {
@@ -40,7 +40,7 @@ struct HomeView: View {
                 SlideMenu()
                     .offset(x: x)
                     .shadow(color: Color.black.opacity(x != 0 ? 0.1 : 0), radius: 5, x: 5, y: 0)
-                    .animation(.easeInOut, value: x) // Smooth animation
+                    .animation(.easeInOut(duration: 0.4), value: x) // Smooth animation
             }
             .gesture(DragGesture().onChanged({ (value) in
                 withAnimation {

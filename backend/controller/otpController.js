@@ -33,11 +33,7 @@ async function sendOTP(req, res) {
 
     console.log("Otp sent successfully")
 
-    res.status(200).json({
-      success: true,
-      message: 'OTP sent successfully',
-      otp,
-    });
+    res.status(200).json({ message: 'OTP sent successfully' });
 
   } catch (error) {
 

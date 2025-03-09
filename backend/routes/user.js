@@ -1,21 +1,38 @@
 import { Router } from "express";
 import User from "../models/user.js";
 import auth from "../middleware/auth.js";
+import sendOTP from "../controller/otpController.js";
+import OTP from "../models/otp.js";
 
 const userRoutes = Router();
 
 /*  
-* This route takes [name, username, email, password]
+* This route takes [name, username, email, password, otp]
 * for signingup the users
 */
 userRoutes.post('/signup', async (req, res) => {
     try {
-        const user = new User(req.body);
-        await user.save();
+        // const user = new User(req.body);
+        // await user.save();
+
+        const otp = await OTP.find({ email: req.body.email }).sort({ createdAt: -1 }).limit(1);
+
+        if (!req.body.otp) {
+            return res.status(400).json({ error: "The OTP is required" });
+        }
+
+        if ( (req.body.otp).length == 0 || req.body.otp != otp[0].otp) {
+            return res.status(400).json({ error: "The OTP is not valid" });
+        }
+
+        await OTP.deleteMany({ email: req.body.email });
+
+        const user = await User.create(req.body);
 
         const token = await user.generateAuthToken();
 
         console.log(`User created: ${user}`);
+
         res.status(201).json({ user, token });
 
     } catch (error) {
@@ -37,10 +54,27 @@ userRoutes.post('/signup', async (req, res) => {
     }
 });
 
+// ! This route is to be called before login and signup
+userRoutes.post('/send-otp', sendOTP);
+
 
 // * Login route which return JWT Token
+// * This route takes [email, password, otp]
 userRoutes.post('/login', async (req, res) => {
     try {
+
+        const otp = await OTP.find({ email: req.body.email }).sort({ createdAt: -1 }).limit(1);
+
+        if (!req.body.otp) {
+            return res.status(400).json({ error: "The OTP is required" });
+        }
+
+        if ( (req.body.otp).length == 0 || req.body.otp != otp[0].otp) {
+            return res.status(400).json({ error: "The OTP is not valid" });
+        }
+
+        await OTP.deleteMany({ email: req.body.email });
+
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
 
@@ -56,6 +90,7 @@ userRoutes.post('/login', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" }); // 500 for unexpected errors
     }
 });
+
 
 // * LogOut Route
 userRoutes.patch('/logout', auth, async (req, res) => {
@@ -77,6 +112,7 @@ userRoutes.patch('/logout', auth, async (req, res) => {
         res.status(500).send(error);
     }
 });
+
 
 // * Get user via id
 userRoutes.get('/:id', async (req, res) => {

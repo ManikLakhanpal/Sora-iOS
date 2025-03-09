@@ -13,7 +13,10 @@ struct LoginView: View {
     
     @State var email: String = ""
     @State var password: String = ""
+    @State var otp: String = ""
+    
     @FocusState private var focusedField: Field?
+    @State var showOTP: Bool = false
     
     enum Field: Hashable {
         case email
@@ -46,6 +49,7 @@ struct LoginView: View {
                     .onSubmit {
                         focusedField = .password
                     }
+                    .textContentType(.emailAddress)
                     .onChange(of: email) {
                         email = String(email.lowercased().trimmingCharacters(in: .whitespaces))
                     }
@@ -57,8 +61,10 @@ struct LoginView: View {
                     .focused($focusedField, equals: .password)
                     .submitLabel(.done) // Shows "Done" on keyboard
                     .onSubmit {
-                        processEmailAndPassword()
+                        self.showOTP.toggle()
+                        viewModel.requestOTP(email: email)
                     }
+                    .textContentType(.password)
                     .overlay(focusedField == .password ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
             }
@@ -66,7 +72,8 @@ struct LoginView: View {
 
             // Register Button
             Button(action: {
-                processEmailAndPassword()
+                self.showOTP.toggle()
+                viewModel.requestOTP(email: email)
             }) {
                 Text("Log In")
                     .frame(maxWidth: .infinity)
@@ -80,6 +87,9 @@ struct LoginView: View {
             .padding(.bottom, 40)
 
             Spacer()
+        }
+        .sheet(isPresented: $showOTP) {
+            VerificationView(otpCode: $otp, onSubmit: processEmailAndPassword)
         }
         .background(Color(.systemBackground))
         .edgesIgnoringSafeArea(.all)
@@ -95,7 +105,7 @@ struct LoginView: View {
         }
         
         self.viewModel.loginErrorMessage = nil
-        self.viewModel.login(email: email, password: password)
+        self.viewModel.login(email: email, password: password, otp: otp)
     }
     
     private var borderSelectionOverlay: some View {

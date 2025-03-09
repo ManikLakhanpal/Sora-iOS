@@ -28,8 +28,8 @@ class AuthViewModel: ObservableObject {
     }
     
     
-    func register(name: String, username: String, email: String, password: String) {
-        AuthServices.register(email: email, username: username, password: password, name: name) { result in
+    func register(name: String, username: String, email: String, password: String, otp: String) {
+        AuthServices.register(email: email, username: username, password: password, name: name, otp: otp) { result in
             
             switch result {
             case .success(let data):
@@ -55,9 +55,33 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    func requestOTP(email: String) {
+        AuthServices.requestOTP(email: email) { result in
+            
+            switch result {
+            case .success(let data):
+                guard let response = try? JSONDecoder().decode(String.self, from: data!) else { return }
+                DispatchQueue.main.async {
+                    
+                    print("\(response)")
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .custom(let errorMessage):
+                        self.registerErrorMessage = errorMessage
+                        self.loginErrorMessage = errorMessage
+                    default:
+                        self.registerErrorMessage = "Invalid email or password"
+                        self.loginErrorMessage = "Invalid email or password"
+                    }
+                }
+            }
+        }
+    }
     
-    func login(email: String, password: String) {
-        AuthServices.login(email: email, password: password) { result in
+    func login(email: String, password: String, otp: String) {
+        AuthServices.login(email: email, password: password, otp: otp) { result in
             switch result {
             case .success(let data):
                 guard let response = try? JSONDecoder().decode(ApiResponse.self, from: data!) else { return }

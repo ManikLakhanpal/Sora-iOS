@@ -16,8 +16,10 @@ struct RegisterView: View {
     @State private var username: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var otp: String = ""
     
     @FocusState private var focusedField: Field?
+    @State var showOTP: Bool = false
     
     enum Field: Hashable {
         case name
@@ -50,6 +52,7 @@ struct RegisterView: View {
                     .onSubmit {
                         focusedField = .username
                     }
+                    .textContentType(.name)
                     .focused($focusedField, equals: .name)
                     .overlay(focusedField == .name ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
@@ -59,6 +62,7 @@ struct RegisterView: View {
                     .focused($focusedField, equals: .username)
                     .textInputAutocapitalization(.never)
                     .submitLabel(.next)
+                    .textContentType(.username)
                     .onSubmit {
                         focusedField = .email
                     }
@@ -74,6 +78,7 @@ struct RegisterView: View {
                     .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
                     .submitLabel(.next) // Shows "Done" on keyboard
+                    .textContentType(.emailAddress)
                     .onSubmit {
                         focusedField = .password
                     }
@@ -87,8 +92,10 @@ struct RegisterView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .focused($focusedField, equals: .password)
                     .submitLabel(.done) // Shows "Done" on keyboard
+                    .textContentType(.newPassword)
                     .onSubmit {
-                        processEmailAndPassword()
+                        self.showOTP.toggle()
+                        viewModel.requestOTP(email: email)
                     }
                     .overlay(focusedField == .password ? borderSelectionOverlay : nil)
                     .padding(.horizontal)
@@ -97,7 +104,8 @@ struct RegisterView: View {
             
             // Register Button
             Button(action: {
-                self.viewModel.register(name: name, username: username, email: email, password: password)
+                self.showOTP.toggle()
+                viewModel.requestOTP(email: email)
             }) {
                 Text("Register")
                     .frame(maxWidth: .infinity)
@@ -111,6 +119,9 @@ struct RegisterView: View {
             .padding(.bottom, 40)
             
             Spacer()
+        }
+        .sheet(isPresented: $showOTP) {
+            VerificationView(otpCode: $otp, onSubmit: processEmailAndPassword)
         }
         .background(Color(.systemBackground))
         .edgesIgnoringSafeArea(.all)
@@ -134,7 +145,7 @@ struct RegisterView: View {
         }
         
         self.viewModel.registerErrorMessage = nil
-        self.viewModel.register(name: name, username: username, email: email, password: password)
+        self.viewModel.register(name: name, username: username, email: email, password: password, otp: otp)
     }
     
     private var borderSelectionOverlay: some View {

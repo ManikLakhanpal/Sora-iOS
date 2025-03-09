@@ -10,10 +10,10 @@ import SwiftUI
 
 public class AuthServices {
     
-    static func login(email: String, password: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
+    static func login(email: String, password: String, otp: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         let urlString = URL(string: "\(backendURL)/user/login")!
         
-        makeRequest(urlString: urlString, reqBody: ["email": email, "password": password]) { result in
+        makeRequest(urlString: urlString, reqBody: ["email": email, "password": password, "otp": otp]) { result in
             switch result {
             case .success(let data):
                 completion(.success(data))
@@ -30,10 +30,30 @@ public class AuthServices {
         }
     }
     
-    static func register(email: String, username: String, password: String, name: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
+    static func register(email: String, username: String, password: String, name: String, otp: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         let urlString = URL(string: "\(backendURL)/user/signup")!
         
-        makeRequest(urlString: urlString, reqBody: ["email": email, "username": username, "password": password, "name": name]) { result in
+        makeRequest(urlString: urlString, reqBody: ["email": email, "username": username, "password": password, "name": name, "otp": otp]) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+                
+            case .failure(let networkError):
+                switch networkError {
+                case .serverError(let message):
+                    completion(.failure(.custom(errorMessage: message)))
+                    
+                default:
+                    completion(.failure(.invalidCredentials))
+                }
+            }
+        }
+    }
+    
+    static func requestOTP(email: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
+        let urlString = URL(string: "\(backendURL)/user/send-otp")!
+        
+        makeRequest(urlString: urlString, reqBody: ["email": email]) { result in
             switch result {
             case .success(let data):
                 completion(.success(data))

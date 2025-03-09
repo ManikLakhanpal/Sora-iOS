@@ -125,6 +125,7 @@ class AuthViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isAuthenticated = false
                     self.currentUser = nil
+                    MessageViewModel.shared.history = []
                 }
                 
             case .failure(let error):

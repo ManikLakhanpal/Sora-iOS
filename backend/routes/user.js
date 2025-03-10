@@ -4,6 +4,7 @@ import auth from "../middleware/auth.js";
 import sendOTP from "../controller/otpController.js";
 import OTP from "../models/otp.js";
 import sendResetLink from "../controller/linkController.js";
+import ResetCode from "../models/passwordLink.js";
 
 const userRoutes = Router();
 
@@ -144,7 +145,36 @@ userRoutes.post('/forgot-password', async (req, res) => {
 
         sendResetLink(req.body.email);
 
-        res.status(200).json(user);
+        res.status(200).json({message: "Reset password email sent successfully."});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+})
+
+userRoutes.patch('/change-password/:code', async (req, res) => {
+    try {
+        const code = await ResetCode.findOne({ code: req.params.code });
+
+        if (!code) { 
+            return res.status(404).json({ error: "Link is not valid or has expired" });
+        }
+
+        const user = await User.findOneAndUpdate(
+            { email: code.email },
+            { password: req.body.password }, 
+            { new: true }
+        );
+
+        console.log(`Got user ${user}`);
+
+        if (!user) { 
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        await code.deleteOne();
+
+        res.status(200).json({message: "Password updated successfully."});
     } catch (error) {
         console.error(error);
         res.status(500).json({error: "Internal Server Error"});

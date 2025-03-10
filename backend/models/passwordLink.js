@@ -28,7 +28,7 @@ async function sendVerificationEmail(email, code) {
             You can change your password now
         </h1>
         <p>
-            click here to continue: http://localhost:5000/user/change-password/${code}
+            click here to continue: ${process.env.BACKEND_URL}/user/change-password/${code}
         </p>
         `
     );

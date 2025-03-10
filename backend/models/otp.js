@@ -32,7 +32,7 @@ async function sendVerificationEmail(email, otp) {
 }
 
 // * This saves the OTP to the database and sends it
-otpSchema.pre("save", async function (next) {
+otpSchema.pre('save', async function (next) {
   console.log("New OTP will be saved to the database");
 
   if (this.isNew) {

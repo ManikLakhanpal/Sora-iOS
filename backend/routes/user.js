@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import auth from "../middleware/auth.js";
 import sendOTP from "../controller/otpController.js";
 import OTP from "../models/otp.js";
+import sendResetLink from "../controller/linkController.js";
 
 const userRoutes = Router();
 
@@ -12,8 +13,6 @@ const userRoutes = Router();
 */
 userRoutes.post('/signup', async (req, res) => {
     try {
-        // const user = new User(req.body);
-        // await user.save();
 
         const otp = await OTP.find({ email: req.body.email }).sort({ createdAt: -1 }).limit(1);
 
@@ -93,6 +92,7 @@ userRoutes.post('/login', async (req, res) => {
 
 
 // * LogOut Route
+// TODO This should be .delete request
 userRoutes.patch('/logout', auth, async (req, res) => {
     try {
         const user = await User.findOneAndUpdate(
@@ -130,5 +130,26 @@ userRoutes.get('/:id', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+
+// TODO make a forgot password route which sends email to user.
+
+userRoutes.post('/forgot-password', async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        console.log(`Got user ${user}`);
+
+        if (!user) { 
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        sendResetLink(req.body.email);
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+})
 
 export default userRoutes;

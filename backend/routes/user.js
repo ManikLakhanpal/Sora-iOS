@@ -152,6 +152,7 @@ userRoutes.post('/forgot-password', async (req, res) => {
     }
 })
 
+// * This route is to change the password of the user
 userRoutes.patch('/change-password/:code', async (req, res) => {
     try {
         const code = await ResetCode.findOne({ code: req.params.code });
@@ -179,6 +180,16 @@ userRoutes.patch('/change-password/:code', async (req, res) => {
         console.error(error);
         res.status(500).json({error: "Internal Server Error"});
     }
+})
+
+// * This route is to fetch the EJS file and allow user to change the password.
+userRoutes.get('/change-password/:code', async (req, res) => {
+    const code = await ResetCode.findOne({ code: req.params.code });
+
+    res.render("passwordReset", { 
+            code: req.params.code, 
+            email: code.email 
+        });
 })
 
 export default userRoutes;

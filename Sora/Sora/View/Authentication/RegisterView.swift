@@ -104,6 +104,10 @@ struct RegisterView: View {
             
             // Register Button
             Button(action: {
+                if email.isEmpty || password.isEmpty || name.isEmpty || username.isEmpty  {
+                    AuthViewModel.shared.registerErrorMessage = "Email and password are required."
+                    return
+                }
                 self.showOTP.toggle()
                 viewModel.requestOTP(email: email)
             }) {

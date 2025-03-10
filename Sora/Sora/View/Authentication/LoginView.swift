@@ -72,6 +72,10 @@ struct LoginView: View {
 
             // Register Button
             Button(action: {
+                if email.isEmpty || password.isEmpty {
+                    AuthViewModel.shared.loginErrorMessage = "Email and password are required."
+                    return
+                }
                 self.showOTP.toggle()
                 viewModel.requestOTP(email: email)
             }) {

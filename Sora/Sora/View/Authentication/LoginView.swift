@@ -91,6 +91,13 @@ struct LoginView: View {
             .padding(.bottom, 40)
 
             Spacer()
+            
+            Button(action: { self.viewModel.forgotPassword(email: email) }) {
+                Text("Forgot Password")
+                    .foregroundStyle(.primary)
+            }
+            
+            Spacer()
         }
         .sheet(isPresented: $showOTP) {
             VerificationView(otpCode: $otp, onSubmit: processEmailAndPassword)

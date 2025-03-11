@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -17,6 +19,11 @@ struct WelcomeView: View {
                     .multilineTextAlignment(.center)
                     .foregroundColor(.primary)
                     .padding(.top, 60)
+                
+                if (viewModel.networkErrorMessage != nil) {
+                    Text(viewModel.networkErrorMessage ?? "")
+                        .foregroundStyle(.red)
+                }
                 
                 // Subtitle
                 Text("Crafting exceptional digital experiences through innovative design and cutting-edge technology.")

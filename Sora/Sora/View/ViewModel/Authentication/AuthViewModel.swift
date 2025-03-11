@@ -13,6 +13,7 @@ class AuthViewModel: ObservableObject {
     
     @Published var loginErrorMessage: String?
     @Published var registerErrorMessage: String?
+    @Published var networkErrorMessage: String?
     
     static let shared = AuthViewModel()
     
@@ -69,10 +70,33 @@ class AuthViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     switch error {
                     case .custom(let errorMessage):
+                        self.loginErrorMessage = errorMessage
                         self.registerErrorMessage = errorMessage
+                    default:
+                        self.loginErrorMessage = "Error sending password reset request"
+                        self.registerErrorMessage = "Error sending password reset request"
+                    }
+                }
+            }
+        }
+    }
+    
+    func forgotPassword(email: String) {
+        AuthServices.forgotPassword(email: email) { result in
+            
+            switch result {
+            case .success(let data):
+                guard let response = try? JSONDecoder().decode(String.self, from: data!) else { return }
+                DispatchQueue.main.async {
+                    
+                    print("\(response)")
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .custom(let errorMessage):
                         self.loginErrorMessage = errorMessage
                     default:
-                        self.registerErrorMessage = "Invalid email or password"
                         self.loginErrorMessage = "Invalid email or password"
                     }
                 }
@@ -145,14 +169,19 @@ class AuthViewModel: ObservableObject {
                 guard let user = try? JSONDecoder().decode(User.self, from: data!) else { return }
                 DispatchQueue.main.async {
                     UserDefaults.standard.set(user.id, forKey: "userid")
+                    
                     self.isAuthenticated = true
                     self.currentUser = user
+                    self.networkErrorMessage = nil
+                    
                     print("Fetched User : \(user)")
                 }
                 
             case .failure(let error):
                 self.isAuthenticated = false
                 self.currentUser = nil
+                self.networkErrorMessage = "It seems that server is down or network is down."
+                print(self.networkErrorMessage!)
                 print(error.localizedDescription)
             }
             

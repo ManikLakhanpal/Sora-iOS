@@ -63,11 +63,11 @@ struct VerificationView: View {
                 // Title and description
                 Text("Verification Code")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "1F2937"))
+                    .foregroundColor(.primary)
                 
                 Text("We've sent a verification code to your email")
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "6B7280"))
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
                 
@@ -92,7 +92,7 @@ struct VerificationView: View {
                     
                     Text("Enter the 6-digit code")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "6B7280"))
+                        .foregroundColor(.secondary)
                 }
                 .padding(.top, 16)
                 
@@ -101,26 +101,30 @@ struct VerificationView: View {
                     onSubmit()
                     dismiss()
                 }) {
-                    Text("Verify")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                    //                    .background(
-                    //                        otpCode.isEmpty
-                    //                        ? Color(hex: "9CA3AF")
-                    //                        : LinearGradient(
-                    //                            gradient: Gradient(colors: [Color(hex: "4F46E5"), Color(hex: "7C3AED")]),
-                    //                            startPoint: .leading,
-                    //                            endPoint: .trailing
-                    //                        )
-                    //                    )
-                        .cornerRadius(12)
-                        .shadow(color: otpCode.isEmpty ? Color.clear : Color(hex: "4F46E5").opacity(0.3), radius: 10, x: 0, y: 5)
+                    HStack {
+                        Text("Verify")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(hex: "4F46E5"), Color(hex: "7C3AED")]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(12)
+                    .shadow(color: Color(hex: "4F46E5").opacity(0.3), radius: 10, x: 0, y: 5)
                 }
+                .padding(.top, 24)
                 .disabled(otpCode.isEmpty)
                 .padding(.horizontal, 32)
-                .padding(.top, 16)
                 
                 // Resend code option
                 Button(action: {

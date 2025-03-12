@@ -76,9 +76,15 @@ struct VerificationView: View {
                     TextField("", text: $otpCode)
                         .keyboardType(.numberPad)
                         .font(.system(size: 32, weight: .medium))
+                        .textContentType(.oneTimeCode)
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 16)
-                        .background(Color(hex: "F9FAFB"))
+                        .background(BackgroundStyle())
+                        .disableAutocorrection(true)
+                        .onChange(of: otpCode) { oldValue, newValue in
+                            let filtered = newValue.filter { $0.isNumber }
+                            otpCode = String(filtered.prefix(-6))
+                        }
                         .cornerRadius(12)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)

@@ -29,6 +29,7 @@ public class AuthServices {
             }
         }
     }
+
     
     static func register(email: String, username: String, password: String, name: String, otp: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         let urlString = URL(string: "\(backendURL)/user/signup")!
@@ -49,6 +50,7 @@ public class AuthServices {
             }
         }
     }
+
     
     static func requestOTP(email: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         let urlString = URL(string: "\(backendURL)/user/send-otp")!
@@ -69,6 +71,7 @@ public class AuthServices {
             }
         }
     }
+
     
     static func forgotPassword(email: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         let urlString = URL(string: "\(backendURL)/user/forgot-password")!
@@ -87,12 +90,15 @@ public class AuthServices {
                     completion(.failure(.custom(errorMessage: message)))
                     
                 default:
-                    AuthViewModel.shared.networkErrorMessage = "It seems that server is down or network is down."
-                    completion(.failure(.invalidCredentials))
+                    DispatchQueue.main.async {
+                        AuthViewModel.shared.networkErrorMessage = "It seems that server is down or network is down."
+                        completion(.failure(.invalidCredentials))
+                    }
                 }
             }
         }
     }
+ 
     
     static func makeRequest(urlString: URL, reqBody: [String: Any], completion: @escaping (_ result: Result<Data?, NetworkError>) -> Void)  {
         let session = URLSession.shared
@@ -149,9 +155,9 @@ public class AuthServices {
         
         task.resume()
     }
+ 
     
     // Fetch the user
-    
     static func fetchUser(id: String, completion: @escaping (_ result: Result<Data?, AuthenticationError>) -> Void) {
         
         let urlString = URL(string: "\(backendURL)/user/\(id)")!

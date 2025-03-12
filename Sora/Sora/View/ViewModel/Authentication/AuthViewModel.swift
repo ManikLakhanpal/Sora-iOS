@@ -174,13 +174,17 @@ class AuthViewModel: ObservableObject {
                     self.currentUser = user
                     self.networkErrorMessage = nil
                     
+                    if self.networkErrorMessage == nil {
+                        self.networkErrorMessage = "You are not connected to internet or server is down"
+                    }
+                    
                     print("Fetched User : \(user)")
                 }
                 
             case .failure(let error):
                 self.isAuthenticated = false
                 self.currentUser = nil
-                self.networkErrorMessage = "It seems that server is down or network is down."
+                
                 print(self.networkErrorMessage!)
                 print(error.localizedDescription)
             }

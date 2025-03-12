@@ -34,7 +34,7 @@ struct MainView: View {
                 .sensoryFeedback(.success, trigger: viewModel.isLoading == false)
             }
             
-            HStack {
+            HStack(spacing: 18) {
                 TextField("Message", text: $viewModel.inputMessage)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .submitLabel(.done)

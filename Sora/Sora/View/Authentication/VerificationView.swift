@@ -5,74 +5,142 @@
 //  Created by Manik Lakhanpal on 09/03/25.
 //
 
+//
+//  VerificationView.swift
+//  Sora
+//
+
 import SwiftUI
 
 struct VerificationView: View {
     @Binding var otpCode: String
+    var onSubmit: () -> Void
+    
+    @Environment(\.dismiss) var dismiss
     @FocusState private var isInputFocused: Bool
-    let onSubmit: () -> Void
+    @State private var animateGradient = false
     
     var body: some View {
-        VStack {
-            Spacer()
-            Spacer()
-            Text("Enter Verification Code")
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            VStack(spacing: 20) {
-                ZStack {
-                    TextField("", text: $otpCode)
-                        .keyboardType(.numberPad)
-                        .textContentType(.oneTimeCode)
-                        .focused($isInputFocused)
-                        .opacity(0.001)
-                        .disableAutocorrection(true)
-                        .onChange(of: otpCode) { oldValue, newValue in
-                            let filtered = newValue.filter { $0.isNumber }
-                            otpCode = String(filtered.prefix(6))
-                        }
-                    HStack(spacing: 12) {
-                        ForEach(0..<6, id: \.self) { index in
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray, lineWidth: 2)
-                                    .frame(width: 50, height: 50)
-                                
-                                Text(index < otpCode.count ? String(Array(otpCode)[index]) : "")
-                                    .font(.title)
-                            }
-                        }
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                startPoint: animateGradient ? .topLeading : .bottomLeading,
+                endPoint: animateGradient ? .bottomTrailing : .topTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+            .onAppear {
+                withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+                    animateGradient.toggle()
+                }
+            }
+            VStack(spacing: 24) {
+                // Header with close button
+                HStack {
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color(hex: "6B7280"))
+                            .padding(8)
+                            .background(Color(hex: "F3F4F6"))
+                            .clipShape(Circle())
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        isInputFocused = true
-                    }
+                    .padding(.trailing, 16)
+                    .padding(.top, 16)
                 }
                 
-                Button(action: onSubmit) {
-                    Text("Submit")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(otpCode.count == 6 ? Color.blue : Color.gray.opacity(0.3))
-                        .foregroundStyle(.white)
-                        .cornerRadius(10)
+                // Icon
+                Circle()
+                    .fill(Color(hex: "EEF2FF"))
+                    .frame(width: 80, height: 80)
+                    .overlay(
+                        Image(systemName: "envelope.badge")
+                            .font(.system(size: 32))
+                            .foregroundColor(Color(hex: "4F46E5"))
+                    )
+                    .padding(.top, 20)
+                
+                // Title and description
+                Text("Verification Code")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(Color(hex: "1F2937"))
+                
+                Text("We've sent a verification code to your email")
+                    .font(.system(size: 16))
+                    .foregroundColor(Color(hex: "6B7280"))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+                
+                // OTP Input
+                VStack(spacing: 12) {
+                    TextField("", text: $otpCode)
+                        .keyboardType(.numberPad)
+                        .font(.system(size: 32, weight: .medium))
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 16)
+                        .background(Color(hex: "F9FAFB"))
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(hex: "E5E7EB"), lineWidth: 1)
+                        )
+                        .padding(.horizontal, 32)
+                        .focused($isInputFocused)
+                        .onAppear {
+                            isInputFocused = true
+                        }
+                    
+                    Text("Enter the 6-digit code")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "6B7280"))
                 }
-                .disabled(otpCode.count < 6)
+                .padding(.top, 16)
+                
+                // Verify Button
+                Button(action: {
+                    onSubmit()
+                    dismiss()
+                }) {
+                    Text("Verify")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                    //                    .background(
+                    //                        otpCode.isEmpty
+                    //                        ? Color(hex: "9CA3AF")
+                    //                        : LinearGradient(
+                    //                            gradient: Gradient(colors: [Color(hex: "4F46E5"), Color(hex: "7C3AED")]),
+                    //                            startPoint: .leading,
+                    //                            endPoint: .trailing
+                    //                        )
+                    //                    )
+                        .cornerRadius(12)
+                        .shadow(color: otpCode.isEmpty ? Color.clear : Color(hex: "4F46E5").opacity(0.3), radius: 10, x: 0, y: 5)
+                }
+                .disabled(otpCode.isEmpty)
+                .padding(.horizontal, 32)
+                .padding(.top, 16)
+                
+                // Resend code option
+                Button(action: {
+                    // Resend code logic would go here
+                }) {
+                    Text("Didn't receive a code? Resend")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(hex: "4F46E5"))
+                }
+                .padding(.top, 8)
+                
+                Spacer()
             }
-            
-            Spacer()
-            Spacer()
-            Spacer()
+            .cornerRadius(24)
+            .edgesIgnoringSafeArea(.bottom)
         }
     }
 }
 
 #Preview {
-    func hello() {
-        print("Submitted")
-    }
-
-    return VerificationView(otpCode: .constant(""), onSubmit: { hello() })
+    VerificationView(otpCode: .constant(""), onSubmit: {})
 }
+

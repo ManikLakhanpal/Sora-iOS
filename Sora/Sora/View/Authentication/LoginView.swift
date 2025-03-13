@@ -20,11 +20,6 @@ struct LoginView: View {
     @State var showOTP: Bool = false
     @State private var animateGradient = false
     
-    enum Field: Hashable {
-        case email
-        case password
-    }
-    
     var body: some View {
         ZStack {
             // Background gradient
@@ -83,7 +78,7 @@ struct LoginView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Email")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -93,7 +88,7 @@ struct LoginView: View {
                                 
                                 TextField("", text: $email)
                                     .placeholder(when: email.isEmpty) {
-                                        Text("Enter your email").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Enter your email").foregroundColor(.primary)
                                     }
                                     .focused($focusedField, equals: .email)
                                     .textInputAutocapitalization(.never)
@@ -103,16 +98,17 @@ struct LoginView: View {
                                         focusedField = .password
                                     }
                                     .textContentType(.emailAddress)
+                                    .foregroundColor(.primary)
                                     .onChange(of: email) {
                                         email = String(email.lowercased().trimmingCharacters(in: .whitespaces))
                                     }
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
+                            
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .email ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .email ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)
@@ -121,7 +117,7 @@ struct LoginView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -131,8 +127,9 @@ struct LoginView: View {
                                 
                                 SecureField("", text: $password)
                                     .placeholder(when: password.isEmpty) {
-                                        Text("Enter your password").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Enter your password").foregroundColor(.primary)
                                     }
+                                    .foregroundColor(.primary)
                                     .focused($focusedField, equals: .password)
                                     .submitLabel(.done)
                                     .onSubmit {

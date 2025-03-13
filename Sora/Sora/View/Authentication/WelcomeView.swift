@@ -49,6 +49,7 @@ struct WelcomeView: View {
                         .padding(.bottom, 10)
                     
                     // Error message if present
+                    // TODO: This networkErrorMessage is not getting displayed
                     if let errorMessage = viewModel.networkErrorMessage {
                         Text(errorMessage)
                             .font(.subheadline)
@@ -95,7 +96,7 @@ struct WelcomeView: View {
                         
                         NavigationLink(destination: RegisterView()) {
                             HStack {
-                                Image(systemName: "person.badge.plus")
+                                Image(systemName: "person.fill.badge.plus")
                                     .font(.headline)
                                 Text("Create Account")
                                     .font(.headline)

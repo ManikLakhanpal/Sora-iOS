@@ -60,11 +60,11 @@ struct RegisterView: View {
                     // Title
                     Text("Create Account")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(hex: "1F2937"))
+                        .foregroundColor(.primary)
                     
                     Text("Sign up to get started")
                         .font(.system(size: 16))
-                        .foregroundColor(Color(hex: "6B7280"))
+                        .foregroundColor(.secondary)
                         .padding(.bottom, 10)
                     
                     // Error message

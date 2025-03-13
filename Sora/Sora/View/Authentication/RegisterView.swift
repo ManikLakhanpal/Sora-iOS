@@ -107,7 +107,6 @@ struct RegisterView: View {
                                     .textContentType(.name)
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
@@ -144,7 +143,6 @@ struct RegisterView: View {
                                     }
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
@@ -182,7 +180,6 @@ struct RegisterView: View {
                                     }
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
@@ -216,7 +213,6 @@ struct RegisterView: View {
                                     .textContentType(.newPassword)
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)

@@ -139,7 +139,6 @@ struct LoginView: View {
                                     .textContentType(.password)
                             }
                             .padding(12)
-                            .background(Color(hex: "F9FAFB"))
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)

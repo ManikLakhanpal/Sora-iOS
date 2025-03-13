@@ -24,13 +24,16 @@ struct LoginView: View {
         ZStack {
             // Background gradient
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.2),
+                    Color.purple.opacity(0.3)
+                ]),
                 startPoint: animateGradient ? .topLeading : .bottomLeading,
                 endPoint: animateGradient ? .bottomTrailing : .topTrailing
             )
-            .edgesIgnoringSafeArea(.all)
+            .ignoresSafeArea()
             .onAppear {
-                withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+                withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
                     animateGradient.toggle()
                 }
             }
@@ -71,7 +74,7 @@ struct LoginView: View {
                             .padding(.horizontal, 24)
                             .transition(.opacity)
                     }
-
+                    
                     // Input Fields
                     VStack(spacing: 20) {
                         // Email field
@@ -157,10 +160,10 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.horizontal, 24)
                     .padding(.top, 4)
-
+                    
                     // Login Button
                     Button(action: {
-                        if email.isEmpty || password.isEmpty {
+                        if email.isEmpty || password.count < 6 {
                             AuthViewModel.shared.loginErrorMessage = "Email and password are required."
                             return
                         }

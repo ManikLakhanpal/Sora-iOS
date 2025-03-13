@@ -16,13 +16,16 @@ struct WelcomeView: View {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                    gradient: Gradient(colors: [
+                        Color.blue.opacity(0.2),
+                        Color.purple.opacity(0.3)
+                    ]),
                     startPoint: animateGradient ? .topLeading : .bottomLeading,
                     endPoint: animateGradient ? .bottomTrailing : .topTrailing
                 )
-                .edgesIgnoringSafeArea(.all)
+                .ignoresSafeArea()
                 .onAppear {
-                    withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+                    withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
                         animateGradient.toggle()
                     }
                 }

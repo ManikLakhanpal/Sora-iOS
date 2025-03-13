@@ -23,13 +23,16 @@ struct VerificationView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.2),
+                    Color.purple.opacity(0.3)
+                ]),
                 startPoint: animateGradient ? .topLeading : .bottomLeading,
                 endPoint: animateGradient ? .bottomTrailing : .topTrailing
             )
-            .edgesIgnoringSafeArea(.all)
+            .ignoresSafeArea()
             .onAppear {
-                withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+                withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
                     animateGradient.toggle()
                 }
             }
@@ -83,7 +86,7 @@ struct VerificationView: View {
                         .disableAutocorrection(true)
                         .onChange(of: otpCode) { oldValue, newValue in
                             let filtered = newValue.filter { $0.isNumber }
-                            otpCode = String(filtered.prefix(-6))
+                            otpCode = String(filtered.prefix(6))
                         }
                         .cornerRadius(12)
                         .overlay(

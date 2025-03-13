@@ -32,13 +32,16 @@ struct RegisterView: View {
         ZStack {
             // Background gradient
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.2),
+                    Color.purple.opacity(0.3)
+                ]),
                 startPoint: animateGradient ? .topLeading : .bottomLeading,
                 endPoint: animateGradient ? .bottomTrailing : .topTrailing
             )
-            .edgesIgnoringSafeArea(.all)
+            .ignoresSafeArea()
             .onAppear {
-                withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+                withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
                     animateGradient.toggle()
                 }
             }
@@ -47,12 +50,12 @@ struct RegisterView: View {
                 VStack(spacing: 24) {
                     // Logo/App icon
                     Circle()
-                        .fill(Color(hex: "4F46E5"))
+                        .fill(Color(hex: "EEF2FF"))
                         .frame(width: 80, height: 80)
                         .overlay(
-                            Text("S")
-                                .font(.system(size: 40, weight: .bold))
-                                .foregroundColor(.white)
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 32))
+                                .foregroundColor(Color(hex: "4F46E5"))
                         )
                         .padding(.top, 60)
                         .padding(.bottom, 20)

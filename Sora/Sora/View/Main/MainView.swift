@@ -26,7 +26,7 @@ struct MainView: View {
                     }
                     .padding()
                 }
-                .onChange(of: viewModel.history.count) { _ in
+                .onChange(of: viewModel.history.count) {
                     withAnimation {
                         proxy.scrollTo(viewModel.history.count - 1, anchor: .bottom)
                     }

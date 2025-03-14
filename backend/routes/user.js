@@ -54,6 +54,7 @@ userRoutes.post('/signup', async (req, res) => {
     }
 });
 
+
 // ! This route is to be called before login and signup
 userRoutes.post('/send-otp', sendOTP);
 

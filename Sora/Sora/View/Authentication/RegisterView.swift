@@ -89,7 +89,7 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Full Name")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -99,7 +99,7 @@ struct RegisterView: View {
                                 
                                 TextField("", text: $name)
                                     .placeholder(when: name.isEmpty) {
-                                        Text("Enter your full name").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Enter your full name").foregroundColor(.secondary)
                                     }
                                     .focused($focusedField, equals: .name)
                                     .keyboardType(.default)
@@ -113,7 +113,7 @@ struct RegisterView: View {
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .name ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .name ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)
@@ -122,7 +122,7 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Username")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -132,7 +132,7 @@ struct RegisterView: View {
                                 
                                 TextField("", text: $username)
                                     .placeholder(when: username.isEmpty) {
-                                        Text("Choose a username").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Choose a username").foregroundColor(.secondary)
                                     }
                                     .focused($focusedField, equals: .username)
                                     .textInputAutocapitalization(.never)
@@ -149,7 +149,7 @@ struct RegisterView: View {
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .username ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .username ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)
@@ -158,7 +158,7 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Email")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -186,7 +186,7 @@ struct RegisterView: View {
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .email ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .email ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)
@@ -195,7 +195,7 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "4B5563"))
+                                .foregroundColor(.secondary)
                                 .padding(.leading, 4)
                             
                             HStack {
@@ -205,7 +205,7 @@ struct RegisterView: View {
                                 
                                 SecureField("", text: $password)
                                     .placeholder(when: password.isEmpty) {
-                                        Text("Create a password").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Create a password").foregroundColor(.secondary)
                                     }
                                     .focused($focusedField, equals: .password)
                                     .submitLabel(.done)
@@ -219,7 +219,7 @@ struct RegisterView: View {
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .password ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .password ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)

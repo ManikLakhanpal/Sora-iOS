@@ -91,7 +91,7 @@ struct LoginView: View {
                                 
                                 TextField("", text: $email)
                                     .placeholder(when: email.isEmpty) {
-                                        Text("Enter your email").foregroundColor(.primary)
+                                        Text("Enter your email").foregroundColor(.secondary)
                                     }
                                     .focused($focusedField, equals: .email)
                                     .textInputAutocapitalization(.never)
@@ -130,7 +130,7 @@ struct LoginView: View {
                                 
                                 SecureField("", text: $password)
                                     .placeholder(when: password.isEmpty) {
-                                        Text("Enter your password").foregroundColor(.primary)
+                                        Text("Enter your password").foregroundColor(.secondary)
                                     }
                                     .foregroundColor(.primary)
                                     .focused($focusedField, equals: .password)
@@ -145,7 +145,7 @@ struct LoginView: View {
                             .cornerRadius(10)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(focusedField == .password ? Color(hex: "4F46E5") : Color(hex: "E5E7EB"), lineWidth: 1)
+                                    .stroke(focusedField == .password ? Color(hex: "4F46E5") : .gray , lineWidth: 1)
                             )
                         }
                         .padding(.horizontal, 24)

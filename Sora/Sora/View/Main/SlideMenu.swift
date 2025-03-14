@@ -63,10 +63,7 @@ struct SlideMenu: View {
             .frame(width: width - 90)
             .ignoresSafeArea(.all, edges: .vertical)
             
-            
-            
         }
-        .background(Color(.systemBackground))
         .confirmationDialog(
             "Are you sure?",
             isPresented: $showLogoutAlert) {

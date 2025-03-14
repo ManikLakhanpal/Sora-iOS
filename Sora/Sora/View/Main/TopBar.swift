@@ -13,34 +13,35 @@ struct TopBar: View {
     var width = UIScreen.main.bounds.width
 
     var body: some View {
-        VStack {
-            HStack {
-                Button() {
-                    withAnimation {
-                        x = 0
+            VStack {
+                HStack {
+                    Button {
+                        withAnimation {
+                            x = 0
+                        }
+                    } label: {
+                        Image(systemName: "line.horizontal.3")
+                            .font(.system(size: 24))
+                            .foregroundStyle(.gray)
                     }
-                } label: {
-                    Image(systemName: "line.horizontal.3")
-                        .font(.system(size: 24))
-                        .foregroundStyle(.gray)
+                    
+                    Spacer()
+                    
+                    Text("Sora")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    
+                    Spacer()
                 }
+                .padding()
                 
-                Spacer(minLength: 0)
-                
-                Text("Sora")
-                    .padding(.trailing)
-                
-                Spacer(minLength: 0)
-                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundStyle(.gray)
+                    .opacity(0.3)
             }
-            .padding()
-            
-            Rectangle()
-                .frame(width: width, height: 1)
-                .foregroundStyle(.gray)
-                .opacity(0.3)
+            .presentationBackground(.clear)
         }
-    }
 }
 
 #Preview {

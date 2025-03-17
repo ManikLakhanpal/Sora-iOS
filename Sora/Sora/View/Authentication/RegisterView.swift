@@ -168,7 +168,7 @@ struct RegisterView: View {
                                 
                                 TextField("", text: $email)
                                     .placeholder(when: email.isEmpty) {
-                                        Text("Enter your email").foregroundColor(Color(hex: "9CA3AF"))
+                                        Text("Enter your email").foregroundColor(.secondary)
                                     }
                                     .focused($focusedField, equals: .email)
                                     .textInputAutocapitalization(.never)
@@ -279,6 +279,9 @@ struct RegisterView: View {
                 }
                 .frame(minHeight: UIScreen.main.bounds.height - 40)
             }
+        }
+        .onTapGesture {
+            UIApplication.shared.endEditing()
         }
         .sheet(isPresented: $showOTP) {
             VerificationView(otpCode: $otp, onSubmit: processEmailAndPassword)

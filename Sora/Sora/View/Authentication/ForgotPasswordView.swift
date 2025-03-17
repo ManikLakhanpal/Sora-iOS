@@ -1,24 +1,23 @@
 //
-//  otpView.swift
+//  ForgotPasswordView.swift
 //  Sora
 //
-//  Created by Manik Lakhanpal on 09/03/25.
-//
-
-//
-//  VerificationView.swift
-//  Sora
+//  Created by Manik Lakhanpal on 17/03/25.
 //
 
 import SwiftUI
 
-struct VerificationView: View {
-    @Binding var otpCode: String
+struct ForgotPasswordView: View {
+    @Binding var email: String
     var onSubmit: () -> Void
     
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var viewModel: AuthViewModel
+    
     @FocusState private var isInputFocused: Bool
     @State private var animateGradient = false
+    
+    @FocusState private var focusedField: Field?
     
     var body: some View {
         ZStack {
@@ -64,54 +63,66 @@ struct VerificationView: View {
                     .padding(.top, 20)
                 
                 // Title and description
-                Text("Verification Code")
+                Text("Forgot Password")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.primary)
                 
-                Text("We've sent a verification code to your email")
+                Text("Please enter your email, we will send you a link to reset your password.")
                     .font(.system(size: 16))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
                 
-                // OTP Input
-                VStack(spacing: 12) {
-                    TextField("", text: $otpCode)
-                        .keyboardType(.numberPad)
-                        .font(.system(size: 32, weight: .medium))
-                        .textContentType(.oneTimeCode)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 16)
-                        .background(BackgroundStyle().opacity(0.3))
-                        .disableAutocorrection(true)
-                        .onChange(of: otpCode) { oldValue, newValue in
-                            let filtered = newValue.filter { $0.isNumber }
-                            otpCode = String(filtered.prefix(6))
-                        }
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(hex: "E5E7EB"), lineWidth: 1)
-                        )
-                        .padding(.horizontal, 32)
-                        .focused($isInputFocused)
-                        .onAppear {
-                            isInputFocused = true
-                        }
-                    
-                    Text("Enter the 6-digit code")
-                        .font(.system(size: 14))
+                // Email Input
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Email")
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.secondary)
+                        .padding(.leading, 4)
+                    
+                    HStack {
+                        Image(systemName: "envelope")
+                            .foregroundColor(focusedField == .email ? Color(hex: "4F46E5") : Color(hex: "9CA3AF"))
+                            .frame(width: 24)
+                        
+                        TextField("", text: $email)
+                            .placeholder(when: email.isEmpty) {
+                                Text("Enter your email").foregroundColor(.secondary)
+                            }
+                            .focused($focusedField, equals: .email)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.emailAddress)
+                            .submitLabel(.done)
+                        
+                            .onSubmit {
+                                onSubmit()
+                            }
+                        
+                            .textContentType(.emailAddress)
+                            .foregroundColor(.primary)
+                            .onChange(of: email) {
+                                email = String(email.lowercased().trimmingCharacters(in: .whitespaces))
+                            }
+                    }
+                    .padding(12)
+                    
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(focusedField == .email ? Color(hex: "4F46E5") : .gray, lineWidth: 1)
+                    )
                 }
+                .padding(.horizontal, 24)
                 .padding(.top, 16)
                 
                 // Verify Button
                 Button(action: {
                     onSubmit()
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     dismiss()
                 }) {
                     HStack {
-                        Text("Verify")
+                        Text("Send Link")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                         
@@ -132,18 +143,9 @@ struct VerificationView: View {
                     .shadow(color: Color(hex: "4F46E5").opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 .padding(.top, 24)
-                .disabled(otpCode.isEmpty)
+                .disabled(email.isEmpty)
                 .padding(.horizontal, 32)
                 
-                // Resend code option
-                Button(action: {
-                    // Resend code logic would go here
-                }) {
-                    Text("Didn't receive a code? Resend")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "4F46E5"))
-                }
-                .padding(.top, 8)
                 
                 Spacer()
             }
@@ -157,6 +159,5 @@ struct VerificationView: View {
 }
 
 #Preview {
-    VerificationView(otpCode: .constant(""), onSubmit: {})
+    ForgotPasswordView(email: .constant(""), onSubmit: {})
 }
-

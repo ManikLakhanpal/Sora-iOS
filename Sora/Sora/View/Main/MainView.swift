@@ -11,8 +11,6 @@ struct MainView: View {
     @StateObject var viewModel = MessageViewModel.shared
     
     var body: some View {
-        
-        
         VStack {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -83,6 +81,9 @@ struct MainView: View {
                     .foregroundColor(.red)
                     .sensoryFeedback(.error, trigger: viewModel.error?.isEmpty == false)
             }
+        }
+        .onTapGesture {
+            UIApplication.shared.endEditing()
         }
         .presentationBackground(.clear)
         

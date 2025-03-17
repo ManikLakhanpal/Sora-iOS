@@ -17,8 +17,9 @@ struct LoginView: View {
     @State var otp: String = ""
     
     @FocusState private var focusedField: Field?
-    @State var showOTP: Bool = false
     @State private var animateGradient = false
+    @State var showOTP: Bool = false
+    @State var showReset: Bool = false
     
     var body: some View {
         ZStack {
@@ -73,6 +74,24 @@ struct LoginView: View {
                             .cornerRadius(8)
                             .padding(.horizontal, 24)
                             .transition(.opacity)
+                    }
+                    
+                    // Error message
+                    
+                    if let loginMessage = self.viewModel.loginMessage {
+                        HStack {
+                            Image(systemName: "checkmark.circle")
+                            
+                            Text(loginMessage)
+                        }
+                        .font(.system(size: 14))
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .background(Color.gray.opacity(0.9))
+                        .cornerRadius(8)
+                        .padding(.horizontal, 24)
+                        .transition(.opacity)
                     }
                     
                     // Input Fields
@@ -152,7 +171,7 @@ struct LoginView: View {
                     }
                     
                     // Forgot password
-                    Button(action: { self.viewModel.forgotPassword(email: email) }) {
+                    Button(action: { self.showReset.toggle() }) {
                         Text("Forgot Password?")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(Color(hex: "4F46E5"))
@@ -216,6 +235,12 @@ struct LoginView: View {
                 .frame(minHeight: UIScreen.main.bounds.height - 40)
             }
         }
+        .onTapGesture {
+            UIApplication.shared.endEditing()
+        }
+        .sheet(isPresented: $showReset) {
+            ForgotPasswordView(email: $email, onSubmit: passwordReset)
+        }
         .sheet(isPresented: $showOTP) {
             VerificationView(otpCode: $otp, onSubmit: processEmailAndPassword)
         }
@@ -232,6 +257,15 @@ struct LoginView: View {
         
         self.viewModel.loginErrorMessage = nil
         self.viewModel.login(email: email, password: password, otp: otp)
+    }
+    
+    func passwordReset() {
+        if email.isEmpty {
+            return self.viewModel.loginErrorMessage = "Email is required"
+        }
+        
+        self.viewModel.loginErrorMessage = nil
+        self.viewModel.forgotPassword(email: email)
     }
 }
 

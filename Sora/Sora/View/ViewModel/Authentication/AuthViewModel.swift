@@ -15,6 +15,8 @@ class AuthViewModel: ObservableObject {
     @Published var registerErrorMessage: String?
     @Published var networkErrorMessage: String?
     
+    @Published var loginMessage: String?
+    
     static let shared = AuthViewModel()
     
     
@@ -88,9 +90,10 @@ class AuthViewModel: ObservableObject {
             case .success(let data):
                 guard let response = try? JSONDecoder().decode(String.self, from: data!) else { return }
                 DispatchQueue.main.async {
-                    
                     print("\(response)")
+                    self.loginMessage = "Password reset link was sent to your email"
                 }
+                
             case .failure(let error):
                 DispatchQueue.main.async {
                     switch error {
@@ -149,6 +152,7 @@ class AuthViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isAuthenticated = false
                     self.currentUser = nil
+                    self.loginMessage = nil
                     MessageViewModel.shared.history = []
                 }
                 

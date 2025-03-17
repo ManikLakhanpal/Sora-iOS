@@ -12,7 +12,7 @@ struct WelcomeView: View {
     @State private var animateGradient = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Background gradient
                 LinearGradient(

@@ -6,17 +6,30 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
     @EnvironmentObject var viewModel: AuthViewModel
+    @State private var userLoggedIn = (Auth.auth().currentUser != nil)
     
     var body: some View {
-        if viewModel.isAuthenticated {
-            if let user = viewModel.currentUser {
+        VStack {
+            if  userLoggedIn {
                 HomeView()
             }
-        } else {
-            WelcomeView()
+            else {
+                WelcomeView()
+            }
+        }
+        .onAppear{
+            //Firebase state change listeneer
+            Auth.auth().addStateDidChangeListener{ auth, user in
+                if (user != nil) {
+                    userLoggedIn = true
+                } else {
+                    userLoggedIn = false
+                }
+            }
         }
     }
 }

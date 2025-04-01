@@ -12,7 +12,7 @@ struct WelcomeView: View {
     @State private var animateGradient = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Background gradient
                 LinearGradient(
@@ -51,20 +51,7 @@ struct WelcomeView: View {
                         .foregroundColor(.primary)
                         .padding(.bottom, 10)
                     
-                    // Error message if present
-                    // TODO: This networkErrorMessage is not getting displayed
-                    if let errorMessage = viewModel.networkErrorMessage {
-                        Text(errorMessage)
-                            .font(.subheadline)
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 30)
-                            .padding(.vertical, 10)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.red.opacity(0.1))
-                            )
-                            .padding(.bottom, 20)
-                    }
+
                     
                     // Subtitle
                     Text("Crafting exceptional digital experiences through innovative design and cutting-edge technology.")
@@ -76,46 +63,22 @@ struct WelcomeView: View {
                     
                     // Buttons
                     VStack(spacing: 16) {
-                        NavigationLink(destination: LoginView()) {
+                        Button(action: { viewModel.login() }) {
                             HStack {
-                                Image(systemName: "person.fill")
-                                    .font(.headline)
-                                Text("Log In")
+                                Image("google_icon") // Ensure you have a Google icon asset
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                
+                                Text("Sign in with Google")
                                     .font(.headline)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .foregroundColor(.white)
+                            .background(Color.white)
+                            .foregroundColor(.black)
                             .cornerRadius(16)
-                            .shadow(color: Color.blue.opacity(0.3), radius: 5, x: 0, y: 3)
-                        }
-                        
-                        NavigationLink(destination: RegisterView()) {
-                            HStack {
-                                Image(systemName: "person.fill.badge.plus")
-                                    .font(.headline)
-                                Text("Create Account")
-                                    .font(.headline)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.purple, Color.purple.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .foregroundColor(.white)
-                            .cornerRadius(16)
-                            .shadow(color: Color.purple.opacity(0.3), radius: 5, x: 0, y: 3)
+                            .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 3)
                         }
                     }
                     .padding(.horizontal, 32)

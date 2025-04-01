@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import auth from "../middleware/auth.js";
+import verifyFirebaseToken from "../middleware/firebaseAuth.js";
 
 const geminiRoutes = Router();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-geminiRoutes.post('/chat', auth, async (req, res) => {
+geminiRoutes.post('/chat', verifyFirebaseToken, async (req, res) => {
     const chatHistory = req.body.history;
     const message = req.body.chat;
 
@@ -19,7 +19,7 @@ geminiRoutes.post('/chat', auth, async (req, res) => {
     res.json({"text": text});
 })
 
-geminiRoutes.post('/stream', auth, async (req, res) => {
+geminiRoutes.post('/stream', verifyFirebaseToken, async (req, res) => {
     const chatHistory = req.body.history;
     const msg = req.body.chat;
   

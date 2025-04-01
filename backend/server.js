@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors"
 import geminiRoutes from "./routes/gemini.js";
-import userRoutes from "./routes/user.js";
 import connectToDB from "./db/database.js";
 
 const app = express();
@@ -15,7 +14,6 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 
 app.use('/api', geminiRoutes);
-app.use('/user', userRoutes);
 
 connectToDB();
 

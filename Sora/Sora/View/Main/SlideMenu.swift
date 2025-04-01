@@ -8,6 +8,7 @@
 
 
 import SwiftUI
+import FirebaseAuth
 
 struct SlideMenu: View {
     
@@ -24,11 +25,11 @@ struct SlideMenu: View {
             HStack(spacing: 0) {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
-                        Text("\(self.viewModel.currentUser?.name ?? "Nil")")
+                        Text("\(Auth.auth().currentUser!.displayName ?? "Nil")")
                             .font(.title3)
                             .fontWeight(.bold)
                         
-                        Text("@\(self.viewModel.currentUser?.username ?? "Nil")")
+                        Text("@\(Auth.auth().currentUser!.email ?? "Nil")")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .fontWeight(.bold)
@@ -40,7 +41,7 @@ struct SlideMenu: View {
                     Spacer()
                     
                     Divider()
-                        
+                    
                     Button(action: {
                         self.showLogoutAlert.toggle()
                     }) {
@@ -78,5 +79,4 @@ struct SlideMenu: View {
 
 #Preview {
     SlideMenu()
-        .environmentObject(AuthViewModel.shared)
 }

@@ -20,6 +20,10 @@ geminiRoutes.post('/chat', verifyFirebaseToken, async (req, res) => {
 })
 
 geminiRoutes.post('/stream', verifyFirebaseToken, async (req, res) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Cache-Control', 'no-cache');
+  
     const chatHistory = req.body.history;
     const msg = req.body.chat;
   

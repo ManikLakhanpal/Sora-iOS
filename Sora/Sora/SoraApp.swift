@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseCore
 import GoogleSignIn
 
-let backendURL = "http://192.168.1.34:5000"
+let backendURL = "http://172.20.10.4:5000"
 
 @main
 struct SoraApp: App {

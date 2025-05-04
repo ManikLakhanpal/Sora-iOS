@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @State private var isSidebarOpened = false
     
     @State private var x: CGFloat = -UIScreen.main.bounds.width + 80
     
@@ -39,13 +40,15 @@ struct HomeView: View {
                     }
                     .onAppear { x = -width } // Ensure sidebar starts hidden
                     
-                    if x == 0 {
-                        Color.black.opacity(0.3)
-                            .ignoresSafeArea()
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0)) { x = -width }
+                    Color.black
+                        .opacity(x == 0 ? 0.3 : 0)
+                        .ignoresSafeArea()
+                        .animation(.easeInOut(duration: 0.4), value: x)
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                x = -width
                             }
-                    }
+                        }
                 }
                 .offset(x: x + width)
                 .animation(.easeInOut(duration: 0.4), value: x) // Ensure smooth movement
